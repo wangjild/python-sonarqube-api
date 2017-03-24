@@ -25,6 +25,7 @@ class SonarAPIHandler(object):
     RULES_ACTIVATION_ENDPOINT = '/api/qualityprofiles/activate_rule'
     RULES_LIST_ENDPOINT = '/api/rules/search'
     RULES_CREATE_ENDPOINT = '/api/rules/create'
+    CE_TASK_ENDPOINT = '/api/ce/task'
 
     # Debt data params (characteristics and metric)
     DEBT_CHARACTERISTICS = (
@@ -363,6 +364,23 @@ class SonarAPIHandler(object):
         # Now yield all values
         for _, prj in sorted(prjs.items(), key=operator.itemgetter(0)):
             yield prj
+
+    def get_ce_task(self, id, additionalFields = None):
+        """
+        Yield computer engine tasks detail information
+
+        :param id: id of the task
+        :param additionalFields: optional: stacktrace,scannerContext
+        :return: task information data
+        """
+        params = {
+            'id': id,
+        }
+
+        if additionalFields and len(additionalFields):
+            params['additionalFields'] = ','.join(additionalFields)
+
+        return self._make_call('get', self.CE_TASK_ENDPOINT, **params).json()
 
     def validate_authentication(self):
         """
